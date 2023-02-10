@@ -1,0 +1,31 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+import { fetchArticles } from "../../lib/getArticles";
+
+import Markdown from "@astrojs/markdown-component";
+
+export async function getStaticPaths() {
+	const articles = await fetchArticles();
+
+	const paths = articles.map((article) => ({
+		params: {
+			slug: article.slug,
+		},
+		props: article,
+	}));
+
+	return paths;
+}
+
+const { slug } = Astro.params;
+const { title, cover_image, published_at, body_markdown } = Astro.props;
+---
+
+<Layout {title}>
+	<h1>{title}</h1>
+	<img src={cover_image} />
+	<small>{new Date(published_at).toLocaleDateString("en-UK")}</small>
+
+	<Markdown content={body_markdown} />
+</Layout>
